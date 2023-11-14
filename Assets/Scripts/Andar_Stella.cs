@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
+
 public class Andar_Stella : MonoBehaviour
 {
     public float entradaHorizontal ;
@@ -14,6 +15,13 @@ public class Andar_Stella : MonoBehaviour
     private Rigidbody2D playerRigidbody2D;
     public int vida = 100;
     public bool podeAndar;
+    public string cenaAlvo = "Dialogo_Corredor";
+    public string cenaAlvo2 = "Menu inicial";
+
+    [SerializeField]  private Transform pontoAtaque;
+
+    [SerializeField] float raioAtaque;
+
     
     
     void Start()
@@ -31,10 +39,6 @@ public class Andar_Stella : MonoBehaviour
        {
         transform.Translate(Vector3.right * Time.deltaTime * velocidade * movimentoHorizontal);
         Movimento();
-       }
-       else
-       {
-
        }
         Morte();
     }
@@ -85,7 +89,9 @@ public class Andar_Stella : MonoBehaviour
         if (other.tag == "Inimigo")
         {
             vida = vida - 20;
-        }
+            animator.SetBool("Ataque", true);
+            StartCoroutine(ResetAtaqueAfterDelay(0.1f));
+        } 
 
         if (other.tag == "Parede")
         {
@@ -95,14 +101,25 @@ public class Andar_Stella : MonoBehaviour
         {
             animator.SetBool("Idle", false);
         }
+
+        if (other.CompareTag("caixa"))
+        {
+        Debug.Log("Troca de cena!");
+        SceneManager.LoadScene(cenaAlvo);
+        }
+
+        if (other.CompareTag("men"))
+        {
+        Debug.Log("Troca de cena!");
+        SceneManager.LoadScene(cenaAlvo2);
+        }
+
     }
 
-    private void Ataque()
+         private IEnumerator ResetAtaqueAfterDelay(float delay)
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            animator.SetBool("Ataque_Stella", true);
-        }
+        yield return new WaitForSeconds(delay);
+        animator.SetBool("Ataque", false);
     }
 
 
@@ -114,7 +131,10 @@ public class Andar_Stella : MonoBehaviour
             SceneManager.LoadScene("MORTE");
         }
     }
+
+
+    /* private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(this.pontoAtaque.position, this.raioAtaque);
+    } */
 }
-
-
-
